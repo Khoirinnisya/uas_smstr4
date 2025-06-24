@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
 
 export default function SurahTafsirScreen({ route }) {
   const { nomorSurat } = route.params || {};
-
   const [tafsir, setTafsir] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,16 +60,12 @@ export default function SurahTafsirScreen({ route }) {
           Tafsir Surat {tafsir.namaLatin} ({tafsir.nama})
         </Text>
 
-        {tafsir?.tafsir?.length > 0 ? (
-          tafsir.tafsir.map((item, index) => (
-            <View key={`${item.nomorAyat}-${index}`} style={styles.tafsirBox}>
-              <Text style={styles.ayatTitle}>Ayat {item.nomorAyat}</Text>
-              <Text style={styles.tafsirText}>{item.teks}</Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.errorText}>Tafsir tidak tersedia.</Text>
-        )}
+        {tafsir.tafsir.map((item, index) => (
+          <View key={`${item.nomorAyat}-${index}`} style={styles.tafsirBox}>
+            <Text style={styles.ayatTitle}>Ayat {item.nomorAyat}</Text>
+            <Text style={styles.tafsirText}>{item.teks}</Text>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -85,10 +88,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 15,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 2 },
   },
   ayatTitle: { fontWeight: 'bold', fontSize: 16, marginBottom: 8, color: '#C2185B' },
   tafsirText: { fontSize: 16, color: '#880E4F', lineHeight: 24 },

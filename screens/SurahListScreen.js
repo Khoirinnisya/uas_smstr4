@@ -6,23 +6,42 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  TextInput,
   StyleSheet,
-  StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SurahListScreen({ navigation }) {
   const [surahList, setSurahList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     fetch('https://equran.id/api/v2/surat')
       .then(res => res.json())
       .then(json => {
         setSurahList(json.data);
+        setFilteredList(json.data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+    if (text.trim() === '') {
+      setFilteredList(surahList);
+      return;
+    }
+
+    const filtered = surahList.filter(item =>
+      item.namaLatin.toLowerCase().includes(text.toLowerCase()) ||
+      item.nomor.toString().includes(text) ||
+      item.nama.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredList(filtered);
+  };
 
   if (loading) {
     return (
@@ -34,54 +53,62 @@ export default function SurahListScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#D81B60" barStyle="light-content" />
-
-      {/* Header Gradasi */}
-      <View style={styles.header}>
-        <Text style={styles.headerEmoji}>📖</Text>
+      {/* HEADER BUATAN SENDIRI */}
+      <LinearGradient colors={['#D81B60', '#F06292']} style={styles.header}>
         <Text style={styles.headerTitle}>Daftar Surat</Text>
+      </LinearGradient>
+
+      {/* SEARCH BAR */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Cari Surat berdasarkan nama atau nomor..."
+          value={searchText}
+          onChangeText={handleSearch}
+          style={styles.searchInput}
+          clearButtonMode="while-editing"
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
       </View>
 
+      {/* LIST SURAT */}
       <FlatList
-        data={surahList}
+        data={filteredList}
         keyExtractor={item => item.nomor.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <TouchableOpacity
-            style={styles.card}
+            style={[styles.item, { backgroundColor: index % 2 === 0 ? '#fff' : '#fde0ec' }]}
             onPress={() => navigation.navigate('SurahDetail', { nomorSurat: item.nomor })}
           >
-            <View style={styles.cardLeft}>
-              <Text style={styles.nomor}>{item.nomor}</Text>
-            </View>
-            <View style={styles.cardCenter}>
+            <Text style={styles.nomor}>{item.nomor}</Text>
+            <View style={{ flex: 1 }}>
               <Text style={styles.namaLatin}>{item.namaLatin}</Text>
               <Text style={styles.arti}>{item.arti}</Text>
             </View>
             <Text style={styles.namaArab}>{item.nama}</Text>
           </TouchableOpacity>
         )}
+        ListEmptyComponent={
+          <View style={styles.center}>
+            <Text style={{ color: '#AD1457', fontSize: 16 }}>Surat tidak ditemukan.</Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF0F6' },
+  container: { flex: 1, backgroundColor: '#fff0f6' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: {
-    backgroundColor: '#D81B60',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    height: 80,
+    justifyContent: 'flex-end',
+    padding: 16,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    elevation: 5,
-  },
-  headerEmoji: {
-    fontSize: 28,
-    marginRight: 10,
+    elevation: 4,
   },
   headerTitle: {
     color: 'white',
@@ -89,35 +116,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  card: {
-    flexDirection: 'row',
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    alignItems: 'center',
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#fff0f6',
   },
-  cardLeft: {
-    backgroundColor: '#F8BBD0',
-    borderRadius: 20,
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
+  searchInput: {
+    height: 44,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderColor: '#D81B60',
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: '#880E4F',
+  },
+
+  item: {
+    flexDirection: 'row',
+    padding: 15,
+    marginHorizontal: 16,
+    marginVertical: 6,
+    borderRadius: 10,
     alignItems: 'center',
-    marginRight: 12,
+    elevation: 2,
   },
   nomor: {
-    color: '#D81B60',
+    width: 30,
     fontWeight: 'bold',
-  },
-  cardCenter: {
-    flex: 1,
+    color: '#D81B60',
   },
   namaLatin: {
     fontSize: 16,
@@ -125,7 +152,7 @@ const styles = StyleSheet.create({
     color: '#880E4F',
   },
   arti: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#AD1457',
   },
   namaArab: {

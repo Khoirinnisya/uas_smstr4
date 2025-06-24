@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import SplashScreen from './screens/SplashScreen';
 import SurahListScreen from './screens/SurahListScreen';
 import SurahDetailScreen from './screens/SurahDetailScreen';
 import SurahTafsirScreen from './screens/SurahTafsirScreen';
@@ -12,7 +13,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SurahList"
+        initialRouteName="Splash"
         screenOptions={{
           headerStyle: { backgroundColor: '#D81B60' },
           headerTintColor: 'white',
@@ -20,9 +21,14 @@ export default function App() {
         }}
       >
         <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="SurahList"
           component={SurahListScreen}
-          options={{ title: 'Daftar Surat' }} // tampilkan header default
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SurahDetail"
