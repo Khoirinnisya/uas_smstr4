@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "17db39eb-517a-4a73-8c93-f2fb10f44f68"
+      }
+    },
+    "android": {
+      "package": "com.khoirinexpo.myapp"
+    }
+  }
+}
