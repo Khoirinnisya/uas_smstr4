@@ -6,6 +6,7 @@ export default function SplashScreen({ navigation }) {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
+    // Jalankan animasi saat splash muncul
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -19,9 +20,10 @@ export default function SplashScreen({ navigation }) {
       }),
     ]).start();
 
+    // Timer untuk pindah ke halaman SurahList setelah 4 detik
     const timer = setTimeout(() => {
       navigation.replace('SurahList');
-    }, 3000);
+    }, 4000); // 🕓 tambahkan waktu biar splash terlihat jelas
 
     return () => clearTimeout(timer);
   }, [fadeAnim, scaleAnim, navigation]);
@@ -29,6 +31,7 @@ export default function SplashScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#D81B60" barStyle="light-content" />
+      
       <Animated.Text
         style={[
           styles.title,
@@ -40,14 +43,8 @@ export default function SplashScreen({ navigation }) {
       >
         Al-Qur'an Digital
       </Animated.Text>
-      <Animated.View
-        style={[
-          styles.subtitleBox,
-          {
-            opacity: fadeAnim,
-          },
-        ]}
-      >
+
+      <Animated.View style={[styles.subtitleBox, { opacity: fadeAnim }]}>
         <Text style={styles.subtitle}>Membaca & Memahami Al-Qur'an</Text>
       </Animated.View>
     </View>
